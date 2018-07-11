@@ -2,12 +2,17 @@ module MyApp {
 
 	export class TitleScreen extends Phaser.State {
 
+		titleText: Phaser.Text;
+
 		create() {
-			// TODO: populate
+			this.titleText = this.add.text(16, -16,
+			"Treasure Hunter Demo");
+			this.titleText.addColor('#ffff00', 0);
 		}
 
 		update() {
-			// TODO: populate
+			let delta = this.time.physicsElapsed;
+			this.titleText.y += 64 * delta;
 		}
 
 	}

@@ -8,7 +8,7 @@ module MyApp {
 	export class Boot extends Phaser.State {
 
 		init() {
-			// Effectively disable multitouch
+			// Effectively disable multi-touch
 			this.input.maxPointers = 1;
 
 			// Enable physics
@@ -16,19 +16,19 @@ module MyApp {
 			this.game.physics.startSystem(Phaser.Physics.ARCADE);
 			*/
 
+			// scale game to fill available container, while
+			// preserving aspect ratio
+			this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+			// keep crisp "pixel art" look
+			Phaser.Canvas.setImageRenderingCrisp(this.game.renderer.view);
+			this.game.stage.smoothed = false;
+
 			if (this.game.device.desktop) {
 				// Add desktop specific settings here
-				this.scale.pageAlignHorizontally = true;
+				// this.scale.pageAlignHorizontally = true;
 			}
 			else {
 				// Add mobile specific settings here
-				
-				/* ScaleManager example
-				this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
-				this.scale.setMinMax(480, 260, 1024, 768);
-				this.scale.forceLandscape = true;
-				this.scale.pageAlignHorizontally = true;
-				*/
 			}
 
 		}

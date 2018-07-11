@@ -7,7 +7,7 @@ module MyApp {
 		
 		constructor() {
 
-			super(320, 176, Phaser.AUTO, 'content', null);
+			super(Const.GAME_WIDTH, Const.GAME_HEIGHT, Phaser.AUTO, 'content', null);
 
 			this.state.add('Boot', Boot, false);
 			this.state.add('Preloader', Preloader, false);

@@ -18,7 +18,11 @@ module MyApp {
 			this.load.setPreloadSprite(this.progressBar);
 
 			// Load other assets needed for game
-      this.load.image(Const.R.blob);
+			this.load.image(Const.R.blob);
+			this.load.image(Const.R.door);
+			this.load.image(Const.R.dungeon);
+			this.load.image(Const.R.hunter);
+			this.load.image(Const.R.treasure);
 		}
 
 		create() {
