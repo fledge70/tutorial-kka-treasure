@@ -1,10 +1,13 @@
 module MyApp {
 
+	/**
+	 * The Preloader class is used to load game assets.
+	 * Because this game is very small, all assets are loaded
+	 * up-front, and no additional preloaders are needed
+	 */
 	export class Preloader extends Phaser.State {
 
 		progressBar: Phaser.Sprite;
-		background: Phaser.Sprite;
-		ready: boolean = false;
 
 		preload() {
 
@@ -15,7 +18,7 @@ module MyApp {
 			this.load.setPreloadSprite(this.progressBar);
 
 			// Load other assets needed for game
-
+      this.load.image(Const.R.blob);
 		}
 
 		create() {

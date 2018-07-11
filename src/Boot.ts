@@ -1,5 +1,10 @@
 module MyApp {
 
+	/**
+	 * Boot is used primarily to load assets needed by the
+	 * Preloader, and also to initialize any system-wide objects
+	 * and settings
+	 */
 	export class Boot extends Phaser.State {
 
 		init() {
@@ -7,7 +12,9 @@ module MyApp {
 			this.input.maxPointers = 1;
 
 			// Enable physics
+			/*
 			this.game.physics.startSystem(Phaser.Physics.ARCADE);
+			*/
 
 			if (this.game.device.desktop) {
 				// Add desktop specific settings here

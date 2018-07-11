@@ -1,5 +1,8 @@
 module MyApp {
 
+  /**
+   * Main entry point for the Treasure Hunter game
+   */
 	export class Game extends Phaser.Game {
 		
 		constructor() {
