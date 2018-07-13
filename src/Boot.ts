@@ -19,6 +19,7 @@ module MyApp {
 			// scale game to fill available container, while
 			// preserving aspect ratio
 			this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+			
 			// keep crisp "pixel art" look
 			Phaser.Canvas.setImageRenderingCrisp(this.game.renderer.view);
 			this.game.stage.smoothed = false;
