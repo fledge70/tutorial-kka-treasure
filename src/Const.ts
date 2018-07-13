@@ -5,19 +5,22 @@ module MyApp {
    */
   export abstract class Const {
     // game width and height
-    static GAME_WIDTH = 320;
-    static GAME_HEIGHT = 176;
+    static readonly GAME_WIDTH = 320;
+    static readonly GAME_HEIGHT = 176;
     
     // using 'R' as the global constant containing resource paths
     // for images, the filename extension '.PNG' is assumed
     // by Phaser's loader
-    static R = {
+    static readonly R = {
       dungeon: "assets/img/dungeon",
       hunter : "assets/img/hunter",
       blob : "assets/img/blob",
       treasure : "assets/img/treasure",
       door : "assets/img/door"
-    }
+    };
+
+    // parameters affecting gameplay
+    static readonly NUMBER_OF_BLOBS = 5;
   }
   
 }

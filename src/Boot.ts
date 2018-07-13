@@ -8,6 +8,15 @@ module MyApp {
 	export class Boot extends Phaser.State {
 
 		init() {
+			// stop keys used by game from propagating up to the browser
+			this.input.keyboard.addKeyCapture([
+				Phaser.Keyboard.LEFT,
+				Phaser.Keyboard.RIGHT,
+				Phaser.Keyboard.UP,
+				Phaser.Keyboard.DOWN,
+				Phaser.Keyboard.SPACEBAR
+			]);
+			
 			// Effectively disable multi-touch
 			this.input.maxPointers = 1;
 
@@ -31,7 +40,6 @@ module MyApp {
 			else {
 				// Add mobile specific settings here
 			}
-
 		}
 
 		preload() {
