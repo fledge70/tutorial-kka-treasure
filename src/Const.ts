@@ -21,6 +21,8 @@ module MyApp {
 
     // parameters affecting gameplay
     static readonly NUMBER_OF_BLOBS = 5;
+    // player speed in pixels/second
+    static readonly PLAYER_SPEED = 100;
   }
   
 }
