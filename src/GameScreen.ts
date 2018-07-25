@@ -1,14 +1,11 @@
 module MyApp {
 
 	export class GameScreen extends Phaser.State {
-
+    
     // keys used by the GameScreen state
     spaceKey: Phaser.Key;
     escKey: Phaser.Key;
-    upKey: Phaser.Key;
-    downKey: Phaser.Key;
-    leftKey: Phaser.Key;
-    rightKey: Phaser.Key;
+    cursorKeys: Phaser.CursorKeys;
 
     // game objects
     background: Phaser.Image;
@@ -40,31 +37,32 @@ module MyApp {
           this.game.rnd.integerInRange(1, 9) * 16
         );
       }
+      this.physics.enable(this.blobGroup);
 
       // add the player sprite
       this.player = this.add.sprite(16, 80, Const.R.hunter);
+      this.physics.enable(this.player);
+      
 
       // register keys used by the current state
       this.spaceKey = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
       this.escKey = this.input.keyboard.addKey(Phaser.Keyboard.ESC);
-      this.upKey = this.input.keyboard.addKey(Phaser.Keyboard.UP);
-      this.downKey = this.input.keyboard.addKey(Phaser.Keyboard.DOWN)
-      this.rightKey = this.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
-      this.leftKey = this.input.keyboard.addKey(Phaser.Keyboard.LEFT);
+     
+      this.cursorKeys = this.input.keyboard.createCursorKeys();
+
       this.input.keyboard.addKeyCapture([
         this.spaceKey,
         this.escKey,
-        this.upKey,
-        this.downKey,
-        this.rightKey,
-        this.leftKey
+        this.cursorKeys
       ]);
 
 		}
 
 		update() {
       this.delta = this.time.physicsElapsed;
-			this.getInput();
+      this.getInput();
+      this.updateEnemies();
+      this.checkCollisions();
 		}
 
     getInput(): void {
@@ -77,22 +75,49 @@ module MyApp {
 
       // temporary vector to enable the normalizing of movement
       let moveVelocity = new Phaser.Point(0, 0);
-
-      if (this.upKey.isDown) {
+      // build velocity vector based on keyboard input
+      if (this.cursorKeys.up.isDown) {
         moveVelocity.y -= 1;
       }
-      if (this.downKey.isDown) {
+      if (this.cursorKeys.down.isDown) {
         moveVelocity.y += 1;
       }
-      if (this.leftKey.isDown) {
+      if (this.cursorKeys.left.isDown) {
         moveVelocity.x -= 1;
       }
-      if (this.rightKey.isDown) {
+      if (this.cursorKeys.right.isDown) {
         moveVelocity.x += 1;
       }
+      // normalize and apply velocity
       moveVelocity = Phaser.Point.normalize(moveVelocity);
       this.player.position.x += moveVelocity.x * Const.PLAYER_SPEED * this.delta;
       this.player.position.y += moveVelocity.y * Const.PLAYER_SPEED * this.delta;
+      // constrain player position to stay in-bounds
+      if (this.player.position.x < 16) {
+        this.player.position.x = 16;
+      } else if (this.player.position.x > Const.GAME_WIDTH - 32) {
+        this.player.position.x = Const.GAME_WIDTH - 32;
+      }
+      if (this.player.position.y < 16) {
+        this.player.position.y = 16;
+      } else if (this.player.position.y > Const.GAME_HEIGHT - 32) {
+        this.player.position.y = Const.GAME_HEIGHT - 32;
+      }
+    }
+
+    updateEnemies(): void {
+      this.blobGroup.forEach( (b: Phaser.Sprite) => {
+        // TODO: add logic to blobs
+        b.x--;
+      });
+    }
+
+    checkCollisions(): void {
+      if (this.physics.arcade.overlap(this.player, this.blobGroup)) {
+        // TODO: replace this placeholder with actual game over logic
+        this.player.alive = false;
+        this.add.text(32, 32, "Game Over!", {fill: '#FFFFFF' });
+      }
     }
 
 	}
