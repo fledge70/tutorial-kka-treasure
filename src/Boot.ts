@@ -32,6 +32,7 @@ module MyApp {
 			// keep crisp "pixel art" look
 			Phaser.Canvas.setImageRenderingCrisp(this.game.renderer.view);
 			this.game.stage.smoothed = false;
+			this.game.renderer.renderSession.roundPixels = true;
 
 			if (this.game.device.desktop) {
 				// Add desktop specific settings here

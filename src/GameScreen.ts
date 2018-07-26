@@ -55,17 +55,18 @@ module MyApp {
         this.escKey,
         this.cursorKeys
       ]);
-
 		}
 
 		update() {
-      this.delta = this.time.physicsElapsed;
       this.getInput();
       this.updateEnemies();
       this.checkCollisions();
 		}
 
     getInput(): void {
+      this.player.body.velocity.x = 0;
+      this.player.body.velocity.y = 0;
+      
       // check for keyboard input, particularly the space bar
 			if (this.escKey.justDown) {
 				// note, quitting is fake in browser, as a user would
@@ -73,25 +74,24 @@ module MyApp {
 				this.state.start('Boot');
       }
 
-      // temporary vector to enable the normalizing of movement
-      let moveVelocity = new Phaser.Point(0, 0);
       // build velocity vector based on keyboard input
       if (this.cursorKeys.up.isDown) {
-        moveVelocity.y -= 1;
+        this.player.body.velocity.y -= 1;
       }
       if (this.cursorKeys.down.isDown) {
-        moveVelocity.y += 1;
+        this.player.body.velocity.y += 1;
       }
       if (this.cursorKeys.left.isDown) {
-        moveVelocity.x -= 1;
+        this.player.body.velocity.x -= 1;
       }
       if (this.cursorKeys.right.isDown) {
-        moveVelocity.x += 1;
+        this.player.body.velocity.x += 1;
       }
       // normalize and apply velocity
-      moveVelocity = Phaser.Point.normalize(moveVelocity);
-      this.player.position.x += moveVelocity.x * Const.PLAYER_SPEED * this.delta;
-      this.player.position.y += moveVelocity.y * Const.PLAYER_SPEED * this.delta;
+      this.player.body.velocity = Phaser.Point.normalize(this.player.body.velocity);
+      this.player.body.velocity.x *= Const.PLAYER_SPEED;
+      this.player.body.velocity.y *= Const.PLAYER_SPEED;
+
       // constrain player position to stay in-bounds
       if (this.player.position.x < 16) {
         this.player.position.x = 16;
