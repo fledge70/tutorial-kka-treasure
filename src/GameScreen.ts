@@ -36,6 +36,14 @@ module MyApp {
           this.game.rnd.integerInRange((i+1)*2, (i+2)*2 ) * 16,
           this.game.rnd.integerInRange(1, 9) * 16
         );
+        // start blob moving in random Y direction at semi-random speed
+        let speed = this.game.rnd.integerInRange(Const.MAX_BLOB_SPEED / 3, Const.MAX_BLOB_SPEED);
+        // determine if blob will start moving up or down at start
+        if (this.game.rnd.integerInRange(0, 1) === 0) {
+          this.blobs[i].body.velocity = new Phaser.Point(0, -speed);
+        } else {
+          this.blobs[i].body.velocity = new Phaser.Point(0, speed);
+        }
       }
       this.physics.enable(this.blobGroup);
 
@@ -69,22 +77,22 @@ module MyApp {
       
       // check for keyboard input, particularly the space bar
 			if (this.escKey.justDown) {
-				// note, quitting is fake in browser, as a user would
+				// note, quitting is fake-ish in browser, as a user would
 				// just close the tab. Just reboot the game
 				this.state.start('Boot');
       }
 
       // build velocity vector based on keyboard input
-      if (this.cursorKeys.up.isDown) {
+      if (this.cursorKeys.up.isDown && this.player.y > this.player.height) {
         this.player.body.velocity.y -= 1;
       }
-      if (this.cursorKeys.down.isDown) {
+      if (this.cursorKeys.down.isDown && this.player.y < Const.GAME_HEIGHT - (this.player.height * 2)) {
         this.player.body.velocity.y += 1;
       }
-      if (this.cursorKeys.left.isDown) {
+      if (this.cursorKeys.left.isDown && this.player.x > this.player.width) {
         this.player.body.velocity.x -= 1;
       }
-      if (this.cursorKeys.right.isDown) {
+      if (this.cursorKeys.right.isDown && this.player.x < Const.GAME_WIDTH - (this.player.width * 2)) {
         this.player.body.velocity.x += 1;
       }
       // normalize and apply velocity
@@ -107,8 +115,11 @@ module MyApp {
 
     updateEnemies(): void {
       this.blobGroup.forEach( (b: Phaser.Sprite) => {
-        // TODO: add logic to blobs
-        b.x--;
+        // check bounds for blobs; if wall hit, start moving in opposite direction
+        if (b.y <= b.height || b.y >= Const.GAME_HEIGHT - (b.height * 2)) {
+          b.y = Phaser.Math.clamp(b.y, b.height + 2, Const.GAME_HEIGHT - (b.height * 2) - 2);
+          b.body.velocity.y *= -1;
+        }
       });
     }
 

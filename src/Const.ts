@@ -23,6 +23,8 @@ module MyApp {
     static readonly NUMBER_OF_BLOBS = 5;
     // player speed in pixels/second
     static readonly PLAYER_SPEED = 100;
+    // enemy speed in pixels/second
+    static readonly MAX_BLOB_SPEED = 75;
   }
   
 }
