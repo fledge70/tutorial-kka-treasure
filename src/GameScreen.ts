@@ -12,9 +12,14 @@ module MyApp {
     player: Phaser.Sprite;
     blobGroup: Phaser.Group;
     blobs: Phaser.Sprite[];
+    treasure: Phaser.Sprite;
+    door: Phaser.Sprite;
 
     // delta variable used to track time between update cycles
     delta: number = 0;
+
+    // track whether player has collected treasure or not
+    playerHasTreasure = false;
 
 		create() {
       // start the simple physics simulation
@@ -47,10 +52,25 @@ module MyApp {
       }
       this.physics.enable(this.blobGroup);
 
+      // generate the exit door
+      this.door = this.add.sprite(
+        Const.GAME_WIDTH - 32,
+        this.game.rnd.integerInRange(1, 9) * 16,
+        Const.R.door
+      );
+      this.physics.enable(this.door);
+
       // add the player sprite
       this.player = this.add.sprite(16, 80, Const.R.hunter);
       this.physics.enable(this.player);
-      
+
+      // generate treasure
+      this.treasure = this.add.sprite(
+        this.game.rnd.integerInRange(48, Const.GAME_WIDTH / 2),
+        this.game.rnd.integerInRange(1, 9) * 16,
+        Const.R.treasure
+      );
+      this.physics.enable(this.treasure);
 
       // register keys used by the current state
       this.spaceKey = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
@@ -68,6 +88,7 @@ module MyApp {
 		update() {
       this.getInput();
       this.updateEnemies();
+      this.updateTreasure();
       this.checkCollisions();
 		}
 
@@ -79,7 +100,11 @@ module MyApp {
 			if (this.escKey.justDown) {
 				// note, quitting is fake-ish in browser, as a user would
 				// just close the tab. Just reboot the game
-				this.state.start('Boot');
+        this.playerHasTreasure = false;
+        this.player.alive = true;
+        this.treasure.x = 0;
+        this.treasure.y = 0;
+        this.state.start('Boot');
       }
 
       // build velocity vector based on keyboard input
@@ -123,11 +148,35 @@ module MyApp {
       });
     }
 
+    updateTreasure(): void {
+      if (this.playerHasTreasure) {
+        this.treasure.x = this.player.x + 8;
+        this.treasure.y = this.player.y + 8;
+      }
+    }
+
     checkCollisions(): void {
+      
+      // check collisions between player and enemies
       if (this.physics.arcade.overlap(this.player, this.blobGroup)) {
         // TODO: replace this placeholder with actual game over logic
         this.player.alive = false;
         this.add.text(32, 32, "Game Over!", {fill: '#FFFFFF' });
+      }
+
+      // check to see if player got the treasure
+      if (this.physics.arcade.overlap(this.player, this.treasure) && this.player.alive) {
+        this.playerHasTreasure = true;
+      }
+
+      // check to see if playe reached exit door
+      if (this.physics.arcade.overlap(this.player, this.door)) {
+        if (this.playerHasTreasure && this.player.alive) {
+          // TODO: replace with actual game win logic
+          // WIN condition is met
+          this.player.alive = false;
+          this.add.text(32, 32, "You win!", {fill: '#FFFFFF' });
+        }
       }
     }
 
