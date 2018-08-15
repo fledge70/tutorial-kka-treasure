@@ -71,6 +71,9 @@ module MyApp {
         Const.R.treasure
       );
       this.physics.enable(this.treasure);
+      // ensure player does not have treasure, this is needed when
+      // restarting the level through pressing ESC
+      this.playerHasTreasure = false;
 
       // register keys used by the current state
       this.spaceKey = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
@@ -100,30 +103,30 @@ module MyApp {
 			if (this.escKey.justDown) {
 				// note, quitting is fake-ish in browser, as a user would
 				// just close the tab. Just reboot the game
-        this.playerHasTreasure = false;
-        this.player.alive = true;
-        this.treasure.x = 0;
-        this.treasure.y = 0;
-        this.state.start('Boot');
+        this.restartGame();
       }
 
       // build velocity vector based on keyboard input
-      if (this.cursorKeys.up.isDown && this.player.y > this.player.height) {
-        this.player.body.velocity.y -= 1;
+      // only allow movement if player is still alive
+      if (this.player.alive) {
+        if (this.cursorKeys.up.isDown && this.player.y > this.player.height) {
+          this.player.body.velocity.y -= 1;
+        }
+        if (this.cursorKeys.down.isDown && this.player.y < Const.GAME_HEIGHT - (this.player.height * 2)) {
+          this.player.body.velocity.y += 1;
+        }
+        if (this.cursorKeys.left.isDown && this.player.x > this.player.width) {
+          this.player.body.velocity.x -= 1;
+        }
+        if (this.cursorKeys.right.isDown && this.player.x < Const.GAME_WIDTH - (this.player.width * 2)) {
+          this.player.body.velocity.x += 1;
+        }
+        // normalize and apply velocity
+        this.player.body.velocity = Phaser.Point.normalize(this.player.body.velocity);
+        this.player.body.velocity.x *= Const.PLAYER_SPEED;
+        this.player.body.velocity.y *= Const.PLAYER_SPEED;
       }
-      if (this.cursorKeys.down.isDown && this.player.y < Const.GAME_HEIGHT - (this.player.height * 2)) {
-        this.player.body.velocity.y += 1;
-      }
-      if (this.cursorKeys.left.isDown && this.player.x > this.player.width) {
-        this.player.body.velocity.x -= 1;
-      }
-      if (this.cursorKeys.right.isDown && this.player.x < Const.GAME_WIDTH - (this.player.width * 2)) {
-        this.player.body.velocity.x += 1;
-      }
-      // normalize and apply velocity
-      this.player.body.velocity = Phaser.Point.normalize(this.player.body.velocity);
-      this.player.body.velocity.x *= Const.PLAYER_SPEED;
-      this.player.body.velocity.y *= Const.PLAYER_SPEED;
+      
 
       // constrain player position to stay in-bounds
       if (this.player.position.x < 16) {
@@ -159,9 +162,10 @@ module MyApp {
       
       // check collisions between player and enemies
       if (this.physics.arcade.overlap(this.player, this.blobGroup)) {
-        // TODO: replace this placeholder with actual game over logic
         this.player.alive = false;
         this.add.text(32, 32, "Game Over!", {fill: '#FFFFFF' });
+        // use the timer callback to restart the game after 4000 ms
+        this.game.time.events.add(Phaser.Timer.SECOND * 4, this.restartGame, this);
       }
 
       // check to see if player got the treasure
@@ -169,15 +173,23 @@ module MyApp {
         this.playerHasTreasure = true;
       }
 
-      // check to see if playe reached exit door
+      // check to see if player reached exit door
       if (this.physics.arcade.overlap(this.player, this.door)) {
         if (this.playerHasTreasure && this.player.alive) {
-          // TODO: replace with actual game win logic
           // WIN condition is met
           this.player.alive = false;
           this.add.text(32, 32, "You win!", {fill: '#FFFFFF' });
+          // use the timer callback to restart the game after 4000 ms
+          this.game.time.events.add(Phaser.Timer.SECOND * 4, this.restartGame, this);
         }
       }
+    }
+
+    restartGame(): void {
+      // reset important variables
+      this.player.alive = true;
+      // go back to the boot scene
+      this.state.start('Boot');
     }
 
 	}
